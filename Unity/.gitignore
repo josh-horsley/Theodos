@@ -1,0 +1,12 @@
+.DS_Store
+Library
+obj
+Temp
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
