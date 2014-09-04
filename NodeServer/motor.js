@@ -9,10 +9,10 @@ module.exports = function (socket) {
         queue = [];
 
     //Call to send a move request to Unity.  Takes 'forward' or 'backward' as a parameter
-    this.Move = function (direction) {
+    this.move = function (direction) {
         motor.whenAvailable(direction, function () {
-            motor.CheckForStop(direction);
-            motor.SetBusy();
+            motor.checkForStop(direction);
+            motor.setBusy();
 
             if (stopRequested && moving) {
                 io.emit('motor', 'stop');
@@ -31,10 +31,10 @@ module.exports = function (socket) {
     };
 
     //Call to send a turn request to Unity.  Takes 'left' or 'right' as a parameter
-    this.Turn = function (direction) {
+    this.turn = function (direction) {
         motor.whenAvailable(direction, function () {
-            motor.CheckForStop(direction);
-            motor.SetBusy();
+            motor.checkForStop(direction);
+            motor.setBusy();
 
             if (stopRequested && turning) {
                 io.emit('motor', 'stop');
@@ -53,20 +53,20 @@ module.exports = function (socket) {
     };
 
     //Sets the stopRequested property to true
-    this.Stop = function () {
+    this.stop = function () {
         stopRequested = true;
     };
 
     //checks if this is a new direction and, if so, sends a stop request
-    this.CheckForStop = function (direction) {
+    this.checkForStop = function (direction) {
         if (direction != currentTask) {
-            motor.Stop();
+            motor.stop();
         }
         currentTask = direction;
     }
 
     //artificial timeout, indicating the motor is busy
-    this.SetBusy = function () {
+    this.setBusy = function () {
         setTimeout(function () {
             busy = false;
         }, 100);
