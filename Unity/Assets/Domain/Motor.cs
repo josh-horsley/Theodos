@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
 public class Motor : MonoBehaviour
@@ -7,16 +8,8 @@ public class Motor : MonoBehaviour
     public float Power = 500f;
     public float Velocity = 500f;
 
-    private HingeJoint rightFront;
-    private HingeJoint rightBack;
-    private HingeJoint leftFront;
-    private HingeJoint leftBack;
-    private HingeJoint[] wheels;
-
-    JointMotor mRightFront;
-    JointMotor mRightBack;
-    JointMotor mLeftFront;
-    JointMotor mLeftBack;
+    List<HingeJoint> rightWheels = new List<HingeJoint>();
+    List<HingeJoint> leftWheels = new List<HingeJoint>();
 
     private bool forward;
     private bool backward;
@@ -25,41 +18,23 @@ public class Motor : MonoBehaviour
 
     void Start()
     {
-        wheels = GetComponentsInChildren<HingeJoint>();
+        var components = GetComponentsInChildren<HingeJoint>();
 
-        foreach (var wheel in wheels)
+        foreach (var component in components)
         {
-            if (wheel.transform.name.Equals("rightFront"))
+            var hinge = component;
+            var motor = new JointMotor();
+            motor.targetVelocity = Velocity;
+            motor.force = 0f;
+            hinge.motor = motor;
+
+            if (component.transform.name.Contains("right"))
             {
-                rightFront = wheel;
-                mRightFront = new JointMotor();
-                mRightFront.targetVelocity = Velocity;
-                mRightFront.force = 0f;
-                rightFront.motor = mRightFront;
+                rightWheels.Add(hinge);
             }
-            else if (wheel.transform.name.Equals("rightBack"))
+            else
             {
-                rightBack = wheel;
-                mRightBack = new JointMotor();
-                mRightBack.targetVelocity = Velocity;
-                mRightBack.force = 0f;
-                rightBack.motor = mRightBack;
-            }
-            else if (wheel.transform.name.Equals("leftFront"))
-            {
-                leftFront = wheel;
-                mLeftFront = new JointMotor();
-                mLeftFront.targetVelocity = Velocity;
-                mLeftFront.force = 0f;
-                leftFront.motor = mLeftFront;
-            }
-            else if (wheel.transform.name.Equals("leftBack"))
-            {
-                leftBack = wheel;
-                mLeftBack = new JointMotor();
-                mLeftBack.targetVelocity = Velocity;
-                mLeftBack.force = 0f;
-                leftBack.motor = mLeftBack;
+                leftWheels.Add(hinge);
             }
         }
     }
@@ -68,23 +43,19 @@ public class Motor : MonoBehaviour
     {
         if (forward)
         {
-            RightForward();
-            LeftForward();
+            Forward();
         }
         else if (backward)
         {
-            RightBackward();
-            LeftBackward();
+            Backward();
         }
         else if (right)
         {
-            RightBackward();
-            LeftForward();
+            Right();
         }
         else if (left)
         {
-            RightForward();
-            LeftBackward();
+            Left();
         }
         else
         {
@@ -119,62 +90,59 @@ public class Motor : MonoBehaviour
         }
     }
 
-    private void RightForward()
+    private void Forward()
     {
-        mRightFront.force = Power;
-        rightFront.motor = mRightFront;
-
-        mRightBack.force = Power;
-        rightBack.motor = mRightBack;
+        Move(rightWheels, true);
+        Move(leftWheels, true);
     }
 
-    private void RightBackward()
+    private void Backward()
     {
-        mRightFront.targetVelocity = -500f;
-        mRightFront.force = Power;
-        rightFront.motor = mRightFront;
-
-        mRightBack.targetVelocity = -500f;
-        mRightBack.force = Power;
-        rightBack.motor = mRightBack;
+        Move(rightWheels, false);
+        Move(leftWheels, false);
     }
 
-    private void LeftForward()
+    private void Right()
     {
-        mLeftFront.force = Power;
-        leftFront.motor = mLeftFront;
-
-        mLeftBack.force = Power;
-        leftBack.motor = mLeftBack;
+        Move(rightWheels, false);
+        Move(leftWheels, true);
     }
 
-    private void LeftBackward()
+    private void Left()
     {
-        mLeftFront.targetVelocity = -500f;
-        mLeftFront.force = Power;
-        leftFront.motor = mLeftFront;
+        Move(rightWheels, true);
+        Move(leftWheels, false);
+    }
 
-        mLeftBack.targetVelocity = -500f;
-        mLeftBack.force = Power;
-        leftBack.motor = mLeftBack;
+    private void Move(List<HingeJoint> wheels, bool forward)
+    {
+        var velocity = Velocity * (forward ? 1 : -1);
+
+        foreach (var wheel in wheels)
+        {
+            var motor = wheel.motor;
+            motor.targetVelocity = velocity;
+            motor.force = Power;
+            wheel.motor = motor;
+        }
     }
 
     private void Stop()
     {
-        mRightFront.targetVelocity = Velocity;
-        mRightFront.force = 0f;
-        rightFront.motor = mRightFront;
+        foreach (var wheel in rightWheels)
+        {
+            var motor = wheel.motor;
+            motor.targetVelocity = 0f;
+            motor.force = Power;
+            wheel.motor = motor;
+        }
 
-        mRightBack.targetVelocity = Velocity;
-        mRightBack.force = 0f;
-        rightBack.motor = mRightBack;
-
-        mLeftFront.targetVelocity = Velocity;
-        mLeftFront.force = 0f;
-        leftFront.motor = mLeftFront;
-
-        mLeftBack.targetVelocity = Velocity;
-        mLeftBack.force = 0f;
-        leftBack.motor = mLeftBack;
+        foreach (var wheel in leftWheels)
+        {
+            var motor = wheel.motor;
+            motor.targetVelocity = 0f;
+            motor.force = Power;
+            wheel.motor = motor;
+        }
     }
 }
