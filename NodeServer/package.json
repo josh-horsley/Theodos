@@ -1,0 +1,8 @@
+{
+    "name": "Theodos",
+    "description": "Can be used for creating and testing your robot AI in a virtual environment before hooking it up to your physical robot.",
+    "author": "Josh Horsley",
+    "dependencies": {
+        "socket.io": "0.9.x"
+    }
+}
