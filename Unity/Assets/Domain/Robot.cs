@@ -31,9 +31,4 @@ public class Robot : MonoBehaviour {
             motor.Command(data.Json.args[0].ToString());
         });
 	}
-
-    void SendMessage(string message)
-    {
-        _nodeClient.Send(message);
-    }
 }

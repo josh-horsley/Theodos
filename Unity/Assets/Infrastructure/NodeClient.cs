@@ -2,10 +2,12 @@
 using SocketIOClient;
 using SocketIOClient.Messages;
 using System.Collections;
+using System.Net;
+using System.Net.Sockets;
 
 public class NodeClient : MonoBehaviour 
 {
-    public string IpAddress = "192.168.1.4";
+    public string IpAddress;
     public int Port = 5000;
     public bool Connect;
     public Client client;
@@ -13,17 +15,28 @@ public class NodeClient : MonoBehaviour
 
 	void Awake ()
     {
-        var url = "http://" + IpAddress + ":" + Port;
+        var ip = string.IsNullOrEmpty(IpAddress) ? LocalIPAddress() : IpAddress;
+        var url = "http://" + ip + ":" + Port;
         
         client = new Client(url);
+
 
         client.Opened += client_Opened;
         client.Message += client_Message;
         client.SocketConnectionClosed += client_SocketConnectionClosed;
         client.Error += client_Error;
 
-        Debug.Log("Client ready to connecting to " + url);
+        Debug.Log("Client ready to connect to " + url);
 	}
+
+    void OnDestroy()
+    {
+        if (client.IsConnected)
+        {
+            client.Close();
+            Debug.Log("Client turned Off");
+        }
+    }
 
     void client_Error(object sender, ErrorEventArgs e)
     {
@@ -71,12 +84,19 @@ public class NodeClient : MonoBehaviour
         }
 	}
 
-    public void Send(string message)
+    private string LocalIPAddress()
     {
-        if (client.IsConnected)
+        IPHostEntry host;
+        string localIP = "";
+        host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (IPAddress ip in host.AddressList)
         {
-            Debug.Log("Sending message: " + message);
-            client.Emit("message", message);
+            if (ip.AddressFamily == AddressFamily.InterNetwork)
+            {
+                localIP = ip.ToString();
+                break;
+            }
         }
+        return localIP;
     }
 }
