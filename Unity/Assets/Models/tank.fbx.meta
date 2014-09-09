@@ -1,12 +1,18 @@
 fileFormatVersion: 2
-guid: 0ba82bc116248f743a0cf132bb3d28fe
+guid: 0f45249c22c14dc4eb91a04f8dbd9a45
 ModelImporter:
-  serializedVersion: 16
+  serializedVersion: 15
   fileIDToRecycleName:
-    100000: //RootNode
-    400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
+    100000: Camera
+    100002: Lamp
+    100004: Plane
+    100006: //RootNode
+    400000: Camera
+    400002: Lamp
+    400004: Plane
+    400006: //RootNode
+    2300000: Plane
+    3300000: Plane
     4300000: Plane
     7400000: Default Take
     9500000: //RootNode
@@ -18,7 +24,6 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
-    motionNodeName: 
     animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
@@ -29,7 +34,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: .00999999978
     meshCompression: 0
     addColliders: 0
     importBlendShapes: 1
@@ -62,5 +67,4 @@ ModelImporter:
     rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
-  additionalBone: 0
   userData: 
